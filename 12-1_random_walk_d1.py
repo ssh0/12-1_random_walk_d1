@@ -27,9 +27,9 @@ class RandomWalk1():
 
         N : A list of walk steps
         """
-        x = np.zeros([self.nwalkers, max(N)], 'i')
+        x = np.zeros([self.nwalkers, max(N)])
+        # generate random number in [0,1)
         p = np.random.random([self.nwalkers, max(N) - 1])
-                             # generate random number in [0,1)
         prob = self.prob
         l = self.l
         x0 = self.x0
@@ -48,16 +48,9 @@ class RandomWalk1():
         You can call the results by "self.N", "self.x_ave", and "self.x_2_ave"
         """
         x = self.x
-        x_ave = np.zeros(len(self.N))
-        for i, nvalue in enumerate(self.N):
-            x_ave[i] = sum(
-                [x[n][nvalue - 1] * 1. for n in xrange(self.nwalkers)]) / self.nwalkers
-
-        x_2_ave = np.zeros(len(self.N))
-        for i, nvalue in enumerate(self.N):
-            x_2_ave[i] = sum(
-                [x[n][nvalue - 1] ** 2. for n in xrange(self.nwalkers)]) / self.nwalkers
-
+        N = np.array(self.N) - 1
+        x_ave = np.average(x, axis=0)[N]
+        x_2_ave = np.average(x*x, axis=0)[N]
         self.x_ave = x_ave
         self.x_2_ave = x_2_ave
 
@@ -95,7 +88,7 @@ class RandomWalk1():
             resN = np.zeros(M, 'f')
             for m in range(M):
                 self.random_walk_d1(_N)
-                t = self.calc_ave()
+                self.calc_ave()
                 resN[m] = self.x_2_ave[N - 1] - self.x_ave[N - 1] ** 2
             std_resN = np.std(resN)
 
@@ -109,13 +102,13 @@ class RandomWalk1():
         return None
 
 if __name__ == '__main__':
-
     rw1 = RandomWalk1()
-    # --- 問題a ---
-    N = [4, 8, 16, 32]  # caluculate when N = *
-    rw1.random_walk_d1(N)
-    rw1.calc_ave()
-    rw1.show()
+
+#    # --- 問題a ---
+#    N = [4, 8, 16, 32]  # caluculate when N = *
+#    rw1.random_walk_d1(N)
+#    rw1.calc_ave()
+#    rw1.show()
 
     # --- 問題b ---
-# rw1.caluculate_error(8) # 8 or 32
+    rw1.caluculate_error(32) # 8 or 32
